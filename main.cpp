@@ -22,14 +22,14 @@ try {
         std::string target_dir = std::filesystem::path(argv[0]).parent_path().string();
         int err = chdir(target_dir.c_str());
         if (err != 0) throw std::runtime_error(
-                std::string("ERROR: Failed to change current working directory to ") + target_dir
+                std::string("Failed to change current working directory to ") + target_dir
                 + "\n\twith chdir error code " + std::to_string(err)
         );
 
         webview::webview w(false, nullptr);
         std::string html = ""; // TODO
         for (int i = 0; i < argc; i++) {
-                // TODO
+                html += ""; // TODO
         }
         html += ""; // TODO
         w.set_html(html);
