@@ -1,0 +1,1 @@
+g++ -O2 ../main.cpp -mwindows -o GLauncher
