@@ -1,0 +1,2 @@
+C:\Users\Amar.Alic\Lokale_Dateien\w64devkit\bin\ar.exe qc libnfd.a CMakeFiles/nfd.dir/nfd_win.cpp.obj
+C:\Users\Amar.Alic\Lokale_Dateien\w64devkit\bin\ranlib.exe libnfd.a

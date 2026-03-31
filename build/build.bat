@@ -1,1 +1,1 @@
-c++ -O2 -march=x86-64-v2 -mwindows -I ../libs/fltk_windows/fltk ../main.cpp ../libs/fltk_windows/libfltk.a -lgdiplus -lgdi32 -lcomdlg32 -lwinspool -lole32 -luser32 -lws2_32 -luuid -lcomctl32 -o GLauncher.exe
+c++ -O2 -march=x86-64-v2 -mwindows -I../libs/fltk_windows/fltk -I../libs/nativefiledialog-extended\src\include ../main.cpp ../libs/fltk_windows/libfltk.a ../libs/libnfd_windows.a -lgdiplus -lgdi32 -lcomdlg32 -lwinspool -lole32 -luser32 -lws2_32 -luuid -lcomctl32 -o GLauncher.exe
