@@ -1,22 +1,17 @@
-#include <iostream>
-
-// #include <FL/Fl.h>
-// #include <FL/Fl_Window.h>
-#include <nfd.hpp>
+#include <FL/Fl.h>
+#include <FL/fl_ask.H>
+#include <FL/Fl_Window.h>
 
 
-int main() {
-        if (NFD::Init() == NFD_ERROR) {
-                std::cout << "ERROR: Failed to initialize nativefiledialogs-extended" << std::endl;
-                // TODO
-                return 1;
-        }
+int main(int argc, char* argv[]) {
+        // TODO: Parse args
 
-        nfdu8char_t* path;
-        if (NFD::OpenDialog(path) == NFD_OKAY) {
-                std::cout << path << std::endl;
-        }
-
-        NFD::Quit();
-        return 0;
+        Fl_Window *window = new Fl_Window(340, 340);
+                // ^ TODO:
+                // - set width based on longest target label
+                // - set height based on # of targets
+        // TODO: button press handler & build GUI
+        window->end();
+        window->show();
+        return Fl::run();
 }

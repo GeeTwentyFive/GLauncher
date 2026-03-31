@@ -1,5 +1,0 @@
-C:/Users/Amar.Alic/source/repos/GLauncher/libs/nativefiledialog-extended/build/CMakeFiles/edit_cache.dir
-C:/Users/Amar.Alic/source/repos/GLauncher/libs/nativefiledialog-extended/build/CMakeFiles/rebuild_cache.dir
-C:/Users/Amar.Alic/source/repos/GLauncher/libs/nativefiledialog-extended/build/src/CMakeFiles/nfd.dir
-C:/Users/Amar.Alic/source/repos/GLauncher/libs/nativefiledialog-extended/build/src/CMakeFiles/edit_cache.dir
-C:/Users/Amar.Alic/source/repos/GLauncher/libs/nativefiledialog-extended/build/src/CMakeFiles/rebuild_cache.dir

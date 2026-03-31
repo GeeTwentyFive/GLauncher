@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/Users/Amar.Alic/source/repos/GLauncher/libs/nativefiledialog-extended/build/cmake_install.cmake",
-		"C:/Users/Amar.Alic/source/repos/GLauncher/libs/nativefiledialog-extended/build/src/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
