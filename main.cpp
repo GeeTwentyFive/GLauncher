@@ -25,20 +25,43 @@ typedef struct {
 int main(int argc, char* argv[]) {
         if (argc < 3) Fl::fatal("Usage: <PATH/TO/TARGET> <BUTTON_LABEL> [[-file <PROMPT> | -dir <PROMPT> | -text <PROMPT>] ...] ...");
 
-        // TODO: Parse args
         std::vector<Button> buttons;
-        for (int i = 1; i < argc; i++) {
+        for (int i = 1; i < argc;) {
                 std::string target_path = argv[i++];
-                if (i == argc) Fl::fatal("Target '%s' is missing a label", target_path);
+                if (i == argc) Fl::fatal("Target '%s' is missing a label", target_path.c_str());
                 std::string button_label = argv[i++];
 
                 std::vector<ButtonInput> inputs;
                 while (i < argc && argv[i][0] == '-') {
-                        // TODO
+                        ButtonInput input;
+
+                        switch (argv[i++][1]) {
+                                case 'f': input.input_type = BUTTON_INPUT_TYPE_FILE; break;
+                                case 'd': input.input_type = BUTTON_INPUT_TYPE_DIR; break;
+                                case 't': input.input_type = BUTTON_INPUT_TYPE_TEXT; break;
+                                default: Fl::fatal("Invalid input type '%s' for target '%s'", argv[i-1], target_path.c_str());
+                        }
+
+                        if (i == argc) Fl::fatal("Input '%s' in target '%s' is missing a prompt", argv[i-1], target_path.c_str());
+                        input.prompt = std::string(argv[i++]);
+
+                        inputs.push_back(input);
                 }
 
                 buttons.push_back(Button{target_path, button_label, inputs});
         }
+
+        // std::string out; // vvv TEMP; TEST vvv
+        // for (Button& button : buttons) {
+        //         out += button.target_path + '\n';
+        //         out += button.button_label + '\n';
+        //         for (ButtonInput& input : button.inputs) {
+        //                 out += std::to_string(input.input_type) + '\n';
+        //                 out += input.prompt + '\n';
+        //         }
+        //         out += '\n';
+        // }
+        // Fl::fatal(out.c_str()); // ^^^ TEMP; TEST ^^^
 
         Fl_Window *window = new Fl_Window(340, 340);
                 // ^ TODO:
