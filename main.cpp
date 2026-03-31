@@ -2,7 +2,12 @@
 #include <vector>
 
 #include <FL/Fl.h>
+#include <FL/fl_draw.H>
 #include <FL/Fl_Window.h>
+#include <FL/Fl_Button.H>
+
+
+#define BUTTON_HEIGHT 40
 
 
 typedef enum {
@@ -23,6 +28,8 @@ typedef struct {
 } Button;
 
 int main(int argc, char* argv[]) {
+        fl_font(FL_HELVETICA, 14);
+
         if (argc < 3) Fl::fatal("Usage: <PATH/TO/TARGET> <BUTTON_LABEL> [[-file <PROMPT> | -dir <PROMPT> | -text <PROMPT>] ...] ...");
 
         std::vector<Button> buttons;
@@ -63,11 +70,22 @@ int main(int argc, char* argv[]) {
         // }
         // Fl::fatal(out.c_str()); // ^^^ TEMP; TEST ^^^
 
-        Fl_Window *window = new Fl_Window(340, 340);
-                // ^ TODO:
-                // - set width based on longest target label
-                // - set height based on # of targets
+        int largest_label_width = 0;
+        for (Button& button : buttons) {
+                int w, _h;
+                fl_measure(button.button_label.c_str(), w, _h);
+                if (w > largest_label_width) largest_label_width = w;
+        }
+
+        Fl_Window* window = new Fl_Window(
+                largest_label_width,
+                BUTTON_HEIGHT * buttons.size()
+        );
+
+        Fl_Button* _TEST = new Fl_Button(0, 0, largest_label_width, BUTTON_HEIGHT, "TEST"); // TEMP; TEST
+        _TEST->callback([](Fl_Widget*){ Fl::fatal("Button clicked!"); }); // TEMP; TEST
         // TODO: button press handler & build GUI
+
         window->end();
         window->show();
         return Fl::run();
