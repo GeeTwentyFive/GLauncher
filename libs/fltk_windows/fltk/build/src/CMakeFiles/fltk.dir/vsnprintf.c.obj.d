@@ -1,0 +1,29 @@
+src/CMakeFiles/fltk.dir/vsnprintf.c.obj: \
+ C:\Users\Amar.Alic\source\repos\GLauncher\libs\fltk-1.4.4\src\vsnprintf.c \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/stdio.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/corecrt.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_mac.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/vadefs.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_off_t.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/swprintf.inl \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sec_api/stdio_s.h \
+ C:\Users\Amar.Alic\source\repos\GLauncher\libs\fltk-1.4.4\src\flstring.h \
+ C:/Users/Amar.Alic/source/repos/GLauncher/libs/fltk-1.4.4/FL/Fl_Export.H \
+ C:/Users/Amar.Alic/source/repos/GLauncher/libs/fltk-1.4.4/build/config.h \
+ C:/Users/Amar.Alic/source/repos/GLauncher/libs/fltk-1.4.4/build/FL/fl_config.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stdarg.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/stdarg.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_stdarg.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/string.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/crtdefs.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sec_api/string_s.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/strings.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/ctype.h \
+ C:/Users/Amar.Alic/source/repos/GLauncher/libs/fltk-1.4.4/FL/fl_string_functions.h \
+ C:/Users/Amar.Alic/source/repos/GLauncher/libs/fltk-1.4.4/FL/Fl_Export.H \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stddef.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/stddef.h

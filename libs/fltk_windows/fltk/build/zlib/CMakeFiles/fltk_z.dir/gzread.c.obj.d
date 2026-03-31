@@ -1,0 +1,36 @@
+zlib/CMakeFiles/fltk_z.dir/gzread.c.obj: \
+ C:\Users\Amar.Alic\source\repos\GLauncher\libs\fltk-1.4.4\zlib\gzread.c \
+ C:\Users\Amar.Alic\source\repos\GLauncher\libs\fltk-1.4.4\zlib\gzguts.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/stdio.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/corecrt.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_mac.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/vadefs.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_off_t.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/swprintf.inl \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sec_api/stdio_s.h \
+ C:\Users\Amar.Alic\source\repos\GLauncher\libs\fltk-1.4.4\zlib\zlib.h \
+ C:\Users\Amar.Alic\source\repos\GLauncher\libs\fltk-1.4.4\zlib\zconf.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stddef.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/stddef.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/crtdefs.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/lib/gcc/x86_64-w64-mingw32/13.2.0/include/limits.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/lib/gcc/x86_64-w64-mingw32/13.2.0/include/syslimits.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/limits.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sys/types.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stdarg.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/stdarg.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/_mingw_stdarg.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/string.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sec_api/string_s.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/stdlib.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/corecrt_wstdlib.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/sec_api/stdlib_s.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/malloc.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/lib/gcc/x86_64-w64-mingw32/13.2.0/include/mm_malloc.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/errno.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/fcntl.h \
+ C:/Users/Amar.Alic/Lokale_Dateien/w64devkit/x86_64-w64-mingw32/include/io.h
