@@ -8,6 +8,10 @@
 
 
 int main(int argc, char* argv[]) {
+        fl_font(FL_HELVETICA, (Fl::h() / 45));
+
+        if (argc < 3) Fl::fatal("Usage: <PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT> [INPUT(S)...] ...");
+
         // TODO
 
         return Fl::run();

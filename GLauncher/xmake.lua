@@ -2,6 +2,7 @@ add_rules("mode.debug", "mode.release")
 set_defaultmode("release")
 set_optimize("faster")
 add_cxflags("-O2", "-march=x86-64-v2")
+set_targetdir(".")
 
 add_requires("fltk 1.3.9")
 
