@@ -1,3 +1,0 @@
-https://www.fltk.org/doc-1.4/classFl__File__Chooser.html#ae95633b0d57caa48c4c2cfd280b14bfb
-https://www.fltk.org/doc-1.4/group__group__comdlg.html#gae998e9cd38954bfde24bd20e550e9b8a
-https://www.fltk.org/doc-1.4/group__group__comdlg.html#ga2fef37bee5a282b195b98386bd4b8bda
