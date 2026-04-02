@@ -1,11 +1,15 @@
-CLI-configured program which creates a GUI launcher which can gather and pass user input
+CLI-configured launcher which makes a GUI for CLI programs and gathers and passes various user input
 
 
 # Usage
 
-`<PATH/TO/TARGET> <BUTTON_LABEL> [[-file <PROMPT> | -dir <PROMPT> | -text <PROMPT>] ...] ...`
+`<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT> [PATH/TO/TARGET2] ...`
 
-^ example: `bin/program1.exe "First program" -file "Select target file" bin/program2.exe "Second program" -dir "" -text "Enter key"`
+TODO: Format string
+
+Example: TODO
+
+TODO: Buttonless mode
 
 
 # Build
