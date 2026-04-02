@@ -3,6 +3,8 @@ set_defaultmode("release")
 set_optimize("faster")
 add_cxflags("-O2", "-march=x86-64-v2")
 set_targetdir(".")
+set_toolchains("mingw", {plat = "windows"})
+set_toolchains("gcc", {plat = "linux"})
 
 add_requires("fltk 1.3.9")
 

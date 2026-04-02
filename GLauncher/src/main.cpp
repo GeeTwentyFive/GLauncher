@@ -20,9 +20,10 @@ void ExecuteTarget(std::string target_path, std::string input_fstring) {
 
         // TODO: Parse input fstring -> gather inputs
 
-        std::string cmd = target_path + ' ' + inputs;
-        int return_code = std::system(cmd.c_str());
-        if (return_code != 0) Fl::fatal("ERROR: Failed to execute `%s` with code %d", cmd.c_str(), return_code);
+        Fl::fatal("'%s' + '%s'", target_path.c_str(), input_fstring.c_str()); // TEMP; TEST
+        // std::string cmd = target_path + ' ' + inputs;
+        // int return_code = std::system(cmd.c_str());
+        // if (return_code != 0) Fl::fatal("ERROR: Failed to execute `%s` with code %d", cmd.c_str(), return_code);
 
         exit(0);
 }
