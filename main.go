@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"fyne.io/fyne/v2/app"
 )
 
 func main() {
@@ -14,4 +16,11 @@ func main() {
 	}
 
 	// TODO
+
+	a := app.New()
+	w := a.NewWindow("")
+
+	// TODO
+
+	w.ShowAndRun()
 }
