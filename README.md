@@ -3,15 +3,10 @@ CLI-configured launcher which makes a GUI for CLI programs and gathers and passe
 
 # Usage
 
-`<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT> [PATH/TO/TARGET2] ...`
+`<<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...`
 
 TODO: Format string
 
 Example: TODO
 
 TODO: Buttonless mode
-
-
-# Build
-
-`cd GLauncher && xmake`
