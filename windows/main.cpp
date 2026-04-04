@@ -7,13 +7,21 @@
 
 #define ERROR(fmt, ...) \
         do { \
-                const WCHAR _fmt[] = L"[ERROR] %s@%d (%s): " fmt L"\n"; \
-                WCHAR msg[sizeof(_fmt)]; \
-                StringCchPrintfW(&msg, sizeof(msg), _fmt, ##__VA_ARGS__); \
-                MessageBoxW(NONE, msg, "", MB_OK); \
+                WCHAR msg[8192]; \
+                StringCchPrintfW( \
+                        msg, \
+                        ARRAYSIZE(msg), \
+                        L"[ERROR] %s@%d (%s): " fmt L"\n", \
+                        __FILE__, __LINE__, __func__, \
+                        ##__VA_ARGS__ \
+                ); \
+                MessageBoxW(NULL, msg, L"", MB_OK | MB_ICONERROR); \
                 ExitProcess(1); \
         } while (0)
 
+
+int argc;
+LPWSTR* argv;
 
 int WINAPI wWinMain(
         HINSTANCE hInstance,
@@ -21,8 +29,9 @@ int WINAPI wWinMain(
         PWSTR pCmdLine,
         int nCmdShow
 ) {
-        int argc;
-        LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+        ERROR("TEST - %s - %d", "TEST2", 727);
+
+        argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
         RegisterClassExW(&(WNDCLASSEXW){
                 .cbSize = sizeof(WNDCLASSEXW),
@@ -48,9 +57,15 @@ int WINAPI wWinMain(
         });
 
         HWND hWnd = CreateWindowExW(
-                // TODO
+                0, L"MainWindowClass", L"",
+                WS_CAPTION | WS_SYSMENU,
+
+                // TODO: Calculate size & pos for:
+                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+
+                NULL, NULL, hInstance, NULL
         );
-        if (!hWnd) { } // TODO: ERROR()
+        if (!hWnd) ERROR("Failed to create window");
 
         ShowWindow(hWnd, nCmdShow);
 
