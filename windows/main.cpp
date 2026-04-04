@@ -2,9 +2,17 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <shellapi.h>
+#include <strsafe.h>
 
 
-// TODO: #define ERROR(fmt, ...)
+#define ERROR(fmt, ...) \
+        do { \
+                const WCHAR _fmt[] = L"[ERROR] %s@%d (%s): " fmt L"\n"; \
+                WCHAR msg[sizeof(_fmt)]; \
+                StringCchPrintfW(&msg, sizeof(msg), _fmt, ##__VA_ARGS__); \
+                MessageBoxW(NONE, msg, "", MB_OK); \
+                ExitProcess(1); \
+        } while (0)
 
 
 int WINAPI wWinMain(
