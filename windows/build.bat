@@ -1,0 +1,1 @@
+gcc -O2 -march=x86-64-v2 -mwindows main.c -luser32 -o GLauncher.exe

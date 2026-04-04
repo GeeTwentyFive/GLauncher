@@ -1,0 +1,1 @@
+g++ -O2 -march=x86-64-v2 -I libs/fltk -L libs main.cpp -lfltk -lX11 -lXinerama -o GLauncher
