@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 
         if (!getcwd(initial_working_directory, PATH_MAX)) ERROR("Failed to get current working directory");
         atexit([](){
-                if (!chdir(initial_working_directory)) {
+                if (chdir(initial_working_directory) != 0) {
                         ERROR(
                                 "Failed to change working directory back to initial one ('%s')",
                                 initial_working_directory
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
         char* path_sep = strrchr(argv[0], '/');
         if (path_sep) *path_sep = '\0';
-        if (!chdir(argv[0])) ERROR("Failed to change working directory to '%s'", argv[0]);
+        if (chdir(argv[0]) != 0) ERROR("Failed to change working directory to '%s'", argv[0]);
 
 
         // Buttonless mode
