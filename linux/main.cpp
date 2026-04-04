@@ -11,6 +11,8 @@
 #include <FL/fl_draw.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Button.H>
+#include <FL/Fl_File_Chooser.H>
+#include <FL/fl_ask.H>
 
 
 #define ERROR(fmt, ...) \
@@ -24,15 +26,84 @@
 char cmd[ARG_MAX];
 int cmd_len = 0;
 
+char prompt[ARG_MAX];
+int prompt_len = 0;
+
 void ExecuteTarget(const char* target_path, const char* input_fstring) {
         cmd_len = strlen(target_path);
         memcpy(cmd, target_path, cmd_len);
-        cmd[cmd_len++] = ' '; cmd[cmd_len] = '\0';
+        cmd[cmd_len++] = ' ';
 
-        // TODO: Parse input_fstring -> gather inputs -> append to cmd
+        int _input_fstring_len = strlen(input_fstring);
+        for (int i = 0; i < _input_fstring_len; i++) {
+                if (
+                        i+2 >= _input_fstring_len ||  // at end
 
-        puts(cmd); puts(input_fstring); exit(0); // TEMP; TEST
-        //exit(system(cmd));
+                        input_fstring[i] != '%' ||
+                        (
+                                input_fstring[i+1] != 'f' &&
+                                input_fstring[i+1] != 'd' &&
+                                input_fstring[i+1] != 's'
+                        ) ||
+                        input_fstring[i+2] != '{'
+                ) {
+                        cmd[cmd_len++] = input_fstring[i];
+                        continue;
+                }
+
+                char dialog_type = input_fstring[i+1];
+
+                i += 3; // skip "%x{"
+
+                while(
+                        (input_fstring[i] != '}') &&
+                        (input_fstring[i] != '\0')
+                ) prompt[prompt_len++] = input_fstring[i++];
+
+                if (input_fstring[i] == '\0') {
+                        Fl::fatal(
+                                "ERROR: Input format '%s' for target '%s' is missing closing '}'",
+                                input_fstring, target_path
+                        );
+                }
+
+                char* input;
+
+                switch (dialog_type) {
+                        case 'f':
+                        {
+                                char* target = fl_file_chooser(prompt, "", "");
+                                if (!target) ERROR("User cancelled file selection for target '%s'", target_path);
+                                input = target;
+                        }
+                        break;
+                        case 'd':
+                        {
+                                char* target = fl_dir_chooser(prompt, "");
+                                if (!target) ERROR("User cancelled directory selection for target '%s'", target_path);
+                                input = target;
+                        }
+                        break;
+                        case 's':
+                        {
+                                char* text_input = (char*)fl_input(prompt);
+                                if (!text_input) ERROR("User cancelled text input for target '%s'", target_path);
+                                input = text_input;
+                        }
+                        break;
+                }
+
+                cmd[cmd_len++] = '"';
+                int input_len = strlen(input);
+                memcpy(cmd+cmd_len, input, input_len);
+                cmd_len += input_len;
+                cmd[cmd_len++] = '"';
+
+                prompt_len = 0;
+        }
+
+        cmd[cmd_len] = '\0';
+        exit(system(cmd));
 }
 
 typedef struct {
