@@ -29,11 +29,11 @@ int WINAPI wWinMain(
         PWSTR pCmdLine,
         int nCmdShow
 ) {
-        ERROR("TEST - %s - %d", "TEST2", 727);
+        ERROR(L"TEST - %s - %d", "TEST2", 727);
 
         argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
-        RegisterClassExW(&(WNDCLASSEXW){
+        WNDCLASSEXW wc = {
                 .cbSize = sizeof(WNDCLASSEXW),
                 .lpfnWndProc = [](
                         HWND hWnd,
@@ -54,10 +54,11 @@ int WINAPI wWinMain(
                 .hInstance = hInstance,
                 .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
                 .lpszClassName = L"MainWindowClass"
-        });
+        };
+        if (!RegisterClassExW(&wc)) ERROR(L"Failed to register WNDCLASSEXW for window");
 
         HWND hWnd = CreateWindowExW(
-                0, L"MainWindowClass", L"",
+                0, wc.lpszClassName, L"",
                 WS_CAPTION | WS_SYSMENU,
 
                 // TODO: Calculate size & pos for:
@@ -65,7 +66,7 @@ int WINAPI wWinMain(
 
                 NULL, NULL, hInstance, NULL
         );
-        if (!hWnd) ERROR("Failed to create window");
+        if (!hWnd) ERROR(L"Failed to create window");
 
         ShowWindow(hWnd, nCmdShow);
 
