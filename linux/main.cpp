@@ -44,13 +44,11 @@ typedef struct {
 char initial_working_directory[PATH_MAX];
 
 int main(int argc, char* argv[]) {
-        ERROR("TEST - %s - %d", "wad", 727);
-
         const int font_height = Fl::h() / 45;
 
         fl_font(FL_HELVETICA, font_height);
 
-        if (argc < 4) ERROR("USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
+        if (argc < 4) Fl::fatal("USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
 
         if (!getcwd(initial_working_directory, PATH_MAX)) ERROR("Failed to get current working directory");
         atexit([](){
