@@ -1,4 +1,4 @@
-CLI-configured launcher which makes a GUI for CLI programs and gathers and passes various user input
+CLI-configured launcher which makes a GUI for one or more CLI programs and gathers and passes various user input
 
 TODO: GIF
 

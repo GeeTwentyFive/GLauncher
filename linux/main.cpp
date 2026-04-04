@@ -44,9 +44,16 @@ typedef struct {
 char initial_working_directory[PATH_MAX];
 
 int main(int argc, char* argv[]) {
-        const int font_height = Fl::h() / 45;
+        int screen_h;
+        {
+                int _x, _y, _w;
+                Fl::screen_xywh(_x, _y, _w, screen_h);
+        }
+        if (screen_h == -1) ERROR("Unable to determine screen height");
 
-        fl_font(FL_HELVETICA, font_height);
+        const int font_height = screen_h / 30;
+
+        fl_font(FL_SCREEN, font_height);
 
         if (argc < 4) Fl::fatal("USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
 
@@ -72,9 +79,9 @@ int main(int argc, char* argv[]) {
         std::vector<Button> buttons;
         for (int i = 1; i < argc;) {
                 char* target_path = argv[i++];
-                if (i == argc) Fl::fatal("Target '%s' is missing a label", target_path);
+                if (i == argc) ERROR("Target '%s' is missing a label", target_path);
                 char* button_label = argv[i++];
-                if (i == argc) Fl::fatal("Target '%s' with label '%s' is missing an input format", target_path, button_label);
+                if (i == argc) ERROR("Target '%s' with label '%s' is missing an input format", target_path, button_label);
                 char* input_format = argv[i++];
 
                 buttons.push_back(Button{target_path, button_label, input_format});
@@ -87,10 +94,11 @@ int main(int argc, char* argv[]) {
                 if (w > largest_label_width) largest_label_width = w;
         }
 
-        int button_height = font_height;
+        const int width = largest_label_width + font_height;
+        const int button_height = font_height;
 
         Fl_Window* window = new Fl_Window(
-                largest_label_width,
+                width,
                 button_height * buttons.size()
         );
 
@@ -98,7 +106,7 @@ int main(int argc, char* argv[]) {
                 Fl_Button* button = new Fl_Button(
                         0,
                         button_height * i,
-                        largest_label_width,
+                        width,
                         button_height,
                         buttons[i].label
                 );
