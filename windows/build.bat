@@ -1,1 +1,1 @@
-g++ -O2 -march=x86-64-v2 -mwindows -municode main.cpp -o GLauncher.exe
+g++ -O2 -march=x86-64-v2 -mwindows -municode main.cpp -lole32 -luuid -o GLauncher.exe

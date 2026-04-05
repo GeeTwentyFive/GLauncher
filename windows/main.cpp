@@ -97,21 +97,21 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                                         _res
                                 );
 
-                                HRESULT _res = pFileOpen->Show(hWnd);
+                                _res = pFileOpen->Show(hWnd);
                                 if (_res != S_OK) ERR(
                                         L"Failed to show file open dialog (return code: %d)",
                                         _res
                                 );
 
                                 IShellItem* pItem;
-                                HRESULT _res = pFileOpen->GetResult(&pItem);
+                                _res = pFileOpen->GetResult(&pItem);
                                 if (_res != S_OK) ERR(
                                         L"Failed to get result from file open dialog (return code: %d)",
                                         _res
                                 );
 
                                 PWSTR pszFilePath;
-                                HRESULT _res = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+                                _res = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
                                 if (_res != S_OK) ERR(
                                         L"Failed to get path from file open dialog result (return code: %d)",
                                         _res
