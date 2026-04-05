@@ -84,14 +84,20 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                 switch (dialog_type) {
                         case L'f':
                         {
-                                IFileDialog* pFileDialog;
+                                IFileDialog* pFileOpen;
                                 HRESULT _res = CoCreateInstance(
-                                        // TODO
+                                        CLSID_FileOpenDialog,
+                                        NULL,
+                                        CLSCTX_ALL,
+                                        IID_IFileOpenDialog,
+                                        (LPVOID*)&pFileOpen
                                 );
                                 if (_res != S_OK) ERR(
                                         L"Failed to open file dialog (Win32 CoCreateInstance() return code: %d)",
                                         _res
                                 );
+
+                                // TODO
                         }
                         break;
                         case L'd':
