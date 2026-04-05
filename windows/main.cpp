@@ -153,7 +153,14 @@ int WINAPI wWinMain(
                 exe_path, GetLastError()
         );
 
-        HRESULT _res = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+        HRESULT _res = CoInitializeEx(
+                NULL,
+                (
+                        COINIT_APARTMENTTHREADED |
+                        COINIT_DISABLE_OLE1DDE |
+                        COINIT_SPEED_OVER_MEMORY
+                )
+        );
         if (_res != S_OK) ERR(
                 L"Failed to initialize Win32 COM (return code: %d)",
                 _res
