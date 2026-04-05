@@ -1,21 +1,29 @@
+#ifndef UNICODE
 #define UNICODE
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <shellapi.h>
 #include <strsafe.h>
 
 
-#define ERROR(fmt, ...) \
+#define ERR(fmt, ...) \
         do { \
+                WCHAR title[8192]; \
+                StringCchPrintfW( \
+                        title, \
+                        ARRAYSIZE(title), \
+                        L"GLauncher [ERROR] %S@%d (%S)", \
+                        __FILE__, __LINE__, __func__ \
+                ); \
                 WCHAR msg[8192]; \
                 StringCchPrintfW( \
                         msg, \
                         ARRAYSIZE(msg), \
-                        L"[ERROR] %s@%d (%s): " fmt L"\n", \
-                        __FILE__, __LINE__, __func__, \
+                        fmt, \
                         ##__VA_ARGS__ \
                 ); \
-                MessageBoxW(NULL, msg, L"", MB_OK | MB_ICONERROR); \
+                MessageBoxW(NULL, msg, title, MB_OK | MB_ICONERROR); \
                 ExitProcess(1); \
         } while (0)
 
@@ -29,8 +37,6 @@ int WINAPI wWinMain(
         PWSTR pCmdLine,
         int nCmdShow
 ) {
-        ERROR(L"TEST - %s - %d", "TEST2", 727);
-
         argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
         WNDCLASSEXW wc = {
@@ -55,7 +61,7 @@ int WINAPI wWinMain(
                 .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
                 .lpszClassName = L"MainWindowClass"
         };
-        if (!RegisterClassExW(&wc)) ERROR(L"Failed to register WNDCLASSEXW for window");
+        if (!RegisterClassExW(&wc)) ERR(L"Failed to register WNDCLASSEXW for window");
 
         HWND hWnd = CreateWindowExW(
                 0, wc.lpszClassName, L"",
@@ -66,7 +72,7 @@ int WINAPI wWinMain(
 
                 NULL, NULL, hInstance, NULL
         );
-        if (!hWnd) ERROR(L"Failed to create window");
+        if (!hWnd) ERR(L"Failed to create window");
 
         ShowWindow(hWnd, nCmdShow);
 
