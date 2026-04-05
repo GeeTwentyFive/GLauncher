@@ -98,6 +98,8 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                                 );
 
                                 // TODO
+
+                                pFileOpen->Release();
                         }
                         break;
                         case L'd':
