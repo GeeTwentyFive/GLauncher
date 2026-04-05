@@ -35,7 +35,7 @@ HWND hWnd = NULL;
 
 
 void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
-        // TODO
+        ERR(L"%s - %s", target_path, input_fstring); // TEMP; TEST
 }
 
 typedef struct {
@@ -124,7 +124,7 @@ int WINAPI wWinMain(
                 ) -> LRESULT {
                         switch (uMsg) {
                                 case WM_CREATE:
-                                        for (int i = 0; i < buttons.size(); i++) {
+                                        for (size_t i = 0; i < buttons.size(); i++) {
                                                 if (!CreateWindowExW(
                                                         0,
                                                         L"BUTTON",
@@ -133,9 +133,9 @@ int WINAPI wWinMain(
                                                         0, (button_height * i),
                                                         width, button_height,
                                                         hWnd,
-                                                        NULL,
+                                                        (HMENU)i,
                                                         (HINSTANCE)GetWindowLongPtrW(hWnd, GWLP_HINSTANCE),
-                                                        // TODO
+                                                        NULL
                                                 )) ERR(
                                                         L"Failed to create button for target '%s' with label '%s' and input fstring '%s' (Win32 GetLastError(): %d)",
                                                         buttons[i].target_path, buttons[i].label, buttons[i].input_fstring, GetLastError()
@@ -144,7 +144,16 @@ int WINAPI wWinMain(
                                         return 0;
 
                                 case WM_COMMAND:
-                                        // TODO: HANDLE BUTTON CLICK
+                                        switch (HIWORD(wParam)) {
+                                                case BN_CLICKED:
+                                                {
+                                                        ExecuteTarget(
+                                                                buttons[LOWORD(wParam)].target_path,
+                                                                buttons[LOWORD(wParam)].input_fstring
+                                                        );
+                                                }
+                                                break;
+                                        }
                                         return 0;
 
                                 case WM_DESTROY:
