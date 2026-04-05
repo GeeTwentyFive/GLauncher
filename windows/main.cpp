@@ -7,6 +7,8 @@
 #include <strsafe.h>
 
 
+HWND hWnd = NULL;
+
 #define ERR(fmt, ...) \
         do { \
                 WCHAR title[8192]; \
@@ -24,12 +26,14 @@
                         ##__VA_ARGS__ \
                 ); \
                 MessageBoxW(NULL, msg, title, MB_OK | MB_ICONERROR); \
+                CloseWindow(hWnd); \
                 ExitProcess(1); \
         } while (0)
 
 
 int argc;
 LPWSTR* argv;
+WCHAR initial_working_directory[32767];
 
 int WINAPI wWinMain(
         HINSTANCE hInstance,
@@ -38,6 +42,20 @@ int WINAPI wWinMain(
         int nCmdShow
 ) {
         argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+        if (argc < 4) ERR(L"USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
+
+        if (!GetCurrentDirectoryW(
+                ARRAYSIZE(initial_working_directory),
+                initial_working_directory
+        )) ERR(L"Failed to get current working directory");
+
+        // TODO: Change dir to app dir
+
+        const int screen_h = GetSystemMetrics(SM_CYSCREEN);
+        if (!screen_h) ERR(L"Failed to get screen height");
+
+        const int font_height = screen_h / 30;
 
         WNDCLASSEXW wc = {
                 .cbSize = sizeof(WNDCLASSEXW),
@@ -51,6 +69,9 @@ int WINAPI wWinMain(
                                 // TODO
 
                                 case WM_DESTROY:
+                                        int _ok = SetCurrentDirectoryW(initial_working_directory);
+                                        if (!_ok) ERR(L"Failed to change back working directory to '%s' (Win32 GetLastError() code: %d)", initial_working_directory, GetLastError());
+
                                         PostQuitMessage(0);
                                         return 0;
                         }
@@ -63,7 +84,7 @@ int WINAPI wWinMain(
         };
         if (!RegisterClassExW(&wc)) ERR(L"Failed to register WNDCLASSEXW for window");
 
-        HWND hWnd = CreateWindowExW(
+        hWnd = CreateWindowExW(
                 0, wc.lpszClassName, L"",
                 WS_CAPTION | WS_SYSMENU,
 
@@ -73,6 +94,15 @@ int WINAPI wWinMain(
                 NULL, NULL, hInstance, NULL
         );
         if (!hWnd) ERR(L"Failed to create window");
+
+        const HFONT font = CreateFontW(font_height, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF_SWISS, 0);
+        if (!font) ERR(L"Failed to create font");
+        SendMessageW(
+                hWnd,
+                WM_SETFONT,
+                (WPARAM)font,
+                FALSE
+        );
 
         ShowWindow(hWnd, nCmdShow);
 
