@@ -12,6 +12,7 @@
 
 
 HWND hWnd = NULL;
+HFONT font;
 
 
 #define ERR(fmt, ...) \
@@ -186,6 +187,49 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                         break;
                         case L's':
                         {
+                                WNDCLASSEXW wc = {
+                                        .cbSize = sizeof(WNDCLASSEXW),
+                                        .lpfnWndProc = [](
+                                                HWND hWnd,
+                                                UINT uMsg,
+                                                WPARAM wParam,
+                                                LPARAM lParam
+                                        ) -> LRESULT {
+                                                switch (uMsg) {
+                                                        case WM_CREATE:
+                                                                // TODO
+                                                                return 0;
+
+                                                        case WM_COMMAND:
+                                                                switch (HIWORD(wParam)) {
+                                                                        case BN_CLICKED:
+                                                                        {
+                                                                                // TODO
+                                                                        }
+                                                                        break;
+                                                                }
+                                                                return 0;
+                                                        
+                                                        case WM_INPUT:
+                                                                // TODO: Handle ENTER
+                                                                return 0;
+                                                        
+                                                        case WM_CLOSE:
+                                                                DestroyWindow(hWnd);
+                                                                return 0;
+                                                }
+
+                                                return DefWindowProcW(hWnd, uMsg, wParam, lParam);
+                                        },
+                                        .hInstance = GetModuleHandleW(NULL),
+                                        .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
+                                        .lpszClassName = L"TextInputDialogClass"
+                                };
+                                if (!RegisterClassExW(&wc)) ERR(
+                                        L"Failed to register WNDCLASSEXW for text input dialog (Win32 GetLastError(): %d)",
+                                        GetLastError()
+                                );
+
                                 // TODO
                         }
                         break;
@@ -214,6 +258,9 @@ LPWSTR* argv;
 WCHAR initial_working_directory[32767];
 WCHAR exe_path[32767];
 std::vector<Button> buttons;
+int screen_w;
+int screen_h;
+int font_height;
 int width;
 int button_height;
 
@@ -284,14 +331,14 @@ int WINAPI wWinMain(
                 if (text_size.cx > largest_label_width) largest_label_width = text_size.cx;
         }
 
-        const int screen_w = GetSystemMetrics(SM_CXSCREEN);
-        const int screen_h = GetSystemMetrics(SM_CYSCREEN);
+        screen_w = GetSystemMetrics(SM_CXSCREEN);
+        screen_h = GetSystemMetrics(SM_CYSCREEN);
         if (!screen_h) ERR( // screen_h is the important one (used for UI scaling)
                 L"Failed to get screen height (Win32 GetLastError(): %d)",
                 GetLastError()
         );
 
-        const int font_height = screen_h / 30;
+        font_height = screen_h / 30;
 
         width = largest_label_width + font_height;
         button_height = font_height;
@@ -375,7 +422,7 @@ int WINAPI wWinMain(
                 GetLastError()
         );
 
-        const HFONT font = CreateFontW(font_height, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF_SWISS, 0);
+        font = CreateFontW(font_height, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF_SWISS, 0);
         if (!font) ERR(L"Failed to create font");
         SendMessageW(
                 hWnd,
