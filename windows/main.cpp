@@ -1,443 +1,212 @@
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include <vector>
 
-#ifndef UNICODE
-#define UNICODE
-#endif
+#include <FL/Fl.H>
+#include <FL/fl_draw.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_File_Chooser.H>
+#include <FL/fl_ask.H>
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <shellapi.h>
-#include <strsafe.h>
-#include <shlwapi.h>
-#include <shobjidl.h>
 
 
-HWND hWnd = NULL;
-HFONT font;
+#define ARG_MAX 32767
+#ifdef PATH_MAX
+#undef PATH_MAX
+#endif
+#define PATH_MAX 32767
 
 
-#define ERR(fmt, ...) \
-        do { \
-                WCHAR title[8192]; \
-                StringCchPrintfW( \
-                        title, \
-                        ARRAYSIZE(title), \
-                        L"GLauncher [ERROR] %S@%d (%S)", \
-                        __FILE__, __LINE__, __func__ \
-                ); \
-                WCHAR msg[8192]; \
-                StringCchPrintfW( \
-                        msg, \
-                        ARRAYSIZE(msg), \
-                        fmt, \
+#ifdef ERROR
+#undef ERROR
+#endif
+#define ERROR(fmt, ...) \
+        do { Fl::fatal( \
+                "[ERROR] %s@%d (%s): " fmt "\n", \
+                        __FILE__, __LINE__, __func__, \
                         ##__VA_ARGS__ \
-                ); \
-                MessageBoxW(NULL, msg, title, MB_OK | MB_ICONERROR); \
-                DestroyWindow(hWnd); \
-                ExitProcess(1); \
-        } while (0)
+        ); } while (0)
 
 
-WCHAR cmd[32767];
-size_t cmd_len = 0;
+char cmd[ARG_MAX];
+int cmd_len = 0;
 
-WCHAR prompt[32767];
-size_t prompt_len = 0;
+char prompt[ARG_MAX];
+int prompt_len = 0;
 
-void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
-        cmd_len = wcslen(target_path);
-        CopyMemory(cmd, target_path, cmd_len*sizeof(WCHAR));
-        cmd[cmd_len++] = L' ';
+void ExecuteTarget(const char* target_path, const char* input_fstring) {
+        cmd_len = strlen(target_path);
+        memcpy(cmd, target_path, cmd_len);
+        cmd[cmd_len++] = ' ';
 
-        size_t _input_fstring_len = wcslen(input_fstring);
+        int _input_fstring_len = strlen(input_fstring);
         for (int i = 0; i < _input_fstring_len; i++) {
                 if (
                         i+2 >= _input_fstring_len ||  // at end
 
-                        input_fstring[i] != L'%' ||
+                        input_fstring[i] != '%' ||
                         (
-                                input_fstring[i+1] != L'f' &&
-                                input_fstring[i+1] != L'd' &&
-                                input_fstring[i+1] != L's'
+                                input_fstring[i+1] != 'f' &&
+                                input_fstring[i+1] != 'd' &&
+                                input_fstring[i+1] != 's'
                         ) ||
-                        input_fstring[i+2] != L'{'
+                        input_fstring[i+2] != '{'
                 ) {
                         cmd[cmd_len++] = input_fstring[i];
                         continue;
                 }
 
-                WCHAR dialog_type = input_fstring[i+1];
+                char dialog_type = input_fstring[i+1];
 
-                i += 3; // skip L"%x{"
+                i += 3; // skip "%x{"
 
                 while(
-                        (input_fstring[i] != L'}') &&
-                        (input_fstring[i] != L'\0')
+                        (input_fstring[i] != '}') &&
+                        (input_fstring[i] != '\0')
                 ) prompt[prompt_len++] = input_fstring[i++];
 
-                if (input_fstring[i] == L'\0') ERR(
-                        L"ERROR: Input format '%s' for target '%s' is missing closing '}'",
-                        input_fstring, target_path
-                );
+                if (input_fstring[i] == '\0') {
+                        Fl::fatal(
+                                "ERROR: Input format '%s' for target '%s' is missing closing '}'",
+                                input_fstring, target_path
+                        );
+                }
 
-                WCHAR input[32767];
-                size_t input_len = 0;
+                char* input;
 
                 switch (dialog_type) {
-                        case L'f':
+                        case 'f':
                         {
-                                IFileDialog* pFileOpen;
-                                HRESULT _res = CoCreateInstance(
-                                        CLSID_FileOpenDialog,
-                                        NULL,
-                                        CLSCTX_ALL,
-                                        IID_IFileOpenDialog,
-                                        (LPVOID*)&pFileOpen
-                                );
-                                if (_res != S_OK) ERR(
-                                        L"Failed to create file open dialog instance (Win32 CoCreateInstance() return code: %d)",
-                                        _res
-                                );
-
-                                pFileOpen->SetTitle(prompt);
-
-                                _res = pFileOpen->Show(hWnd);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to show file open dialog (return code: %d)",
-                                        _res
-                                );
-
-                                IShellItem* pItem;
-                                _res = pFileOpen->GetResult(&pItem);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to get result from file open dialog (return code: %d)",
-                                        _res
-                                );
-
-                                PWSTR pszFilePath;
-                                _res = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to get path from file open dialog result (return code: %d)",
-                                        _res
-                                );
-
-                                input_len = wcslen(pszFilePath);
-                                CopyMemory(input, pszFilePath, input_len*sizeof(WCHAR));
-
-                                CoTaskMemFree(pszFilePath);
-                                pItem->Release();
-                                pFileOpen->Release();
+                                char* target = fl_file_chooser(prompt, "", "");
+                                if (!target) ERROR("User cancelled file selection for target '%s'", target_path);
+                                input = target;
                         }
                         break;
-                        case L'd':
+                        case 'd':
                         {
-                                IFileDialog* pDirOpen;
-                                HRESULT _res = CoCreateInstance(
-                                        CLSID_FileOpenDialog,
-                                        NULL,
-                                        CLSCTX_ALL,
-                                        IID_IFileOpenDialog,
-                                        (LPVOID*)&pDirOpen
-                                );
-                                if (_res != S_OK) ERR(
-                                        L"Failed to create file open dialog instance (Win32 CoCreateInstance() return code: %d)",
-                                        _res
-                                );
-
-                                FILEOPENDIALOGOPTIONS dwFlags;
-                                _res = pDirOpen->GetOptions(&dwFlags);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to get dir open dialog options (return code: %d)",
-                                        _res
-                                );
-                                _res = pDirOpen->SetOptions(dwFlags | FOS_PICKFOLDERS);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to set dir open dialog options (return code: %d)",
-                                        _res
-                                );
-
-                                pDirOpen->SetTitle(prompt);
-
-                                _res = pDirOpen->Show(hWnd);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to show dir open dialog (return code: %d)",
-                                        _res
-                                );
-
-                                IShellItem* pItem;
-                                _res = pDirOpen->GetResult(&pItem);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to get result from dir open dialog (return code: %d)",
-                                        _res
-                                );
-
-                                PWSTR pszDirPath;
-                                _res = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszDirPath);
-                                if (_res != S_OK) ERR(
-                                        L"Failed to get path from dir open dialog result (return code: %d)",
-                                        _res
-                                );
-
-                                input_len = wcslen(pszDirPath);
-                                CopyMemory(input, pszDirPath, input_len*sizeof(WCHAR));
-
-                                CoTaskMemFree(pszDirPath);
-                                pItem->Release();
-                                pDirOpen->Release();
+                                char* target = fl_dir_chooser(prompt, "");
+                                if (!target) ERROR("User cancelled directory selection for target '%s'", target_path);
+                                input = target;
                         }
                         break;
-                        case L's':
+                        case 's':
                         {
-                                WNDCLASSEXW wc = {
-                                        .cbSize = sizeof(WNDCLASSEXW),
-                                        .lpfnWndProc = [](
-                                                HWND hWnd,
-                                                UINT uMsg,
-                                                WPARAM wParam,
-                                                LPARAM lParam
-                                        ) -> LRESULT {
-                                                switch (uMsg) {
-                                                        case WM_CREATE:
-                                                                // TODO
-                                                                return 0;
-
-                                                        case WM_COMMAND:
-                                                                switch (HIWORD(wParam)) {
-                                                                        case BN_CLICKED:
-                                                                        {
-                                                                                // TODO
-                                                                        }
-                                                                        break;
-                                                                }
-                                                                return 0;
-                                                        
-                                                        case WM_INPUT:
-                                                                // TODO: Handle ENTER
-                                                                return 0;
-                                                        
-                                                        case WM_CLOSE:
-                                                                DestroyWindow(hWnd);
-                                                                return 0;
-                                                }
-
-                                                return DefWindowProcW(hWnd, uMsg, wParam, lParam);
-                                        },
-                                        .hInstance = GetModuleHandleW(NULL),
-                                        .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
-                                        .lpszClassName = L"TextInputDialogClass"
-                                };
-                                if (!RegisterClassExW(&wc)) ERR(
-                                        L"Failed to register WNDCLASSEXW for text input dialog (Win32 GetLastError(): %d)",
-                                        GetLastError()
-                                );
-
-                                // TODO
+                                char* text_input = (char*)fl_input(prompt);
+                                if (!text_input) ERROR("User cancelled text input for target '%s'", target_path);
+                                input = text_input;
                         }
                         break;
                 }
 
-                cmd[cmd_len++] = L'"';
-                CopyMemory(cmd+cmd_len, input, input_len*sizeof(WCHAR));
+                cmd[cmd_len++] = '"';
+                int input_len = strlen(input);
+                memcpy(cmd+cmd_len, input, input_len);
                 cmd_len += input_len;
-                cmd[cmd_len++] = L'"';
+                cmd[cmd_len++] = '"';
 
                 prompt_len = 0;
         }
 
-        cmd[cmd_len] = L'\0';
-        ExitProcess(_wsystem(cmd));
+        cmd[cmd_len] = '\0';
+        exit(system(cmd));
 }
 
 typedef struct {
-        WCHAR* target_path;
-        WCHAR* label;
-        WCHAR* input_fstring;
+        char* target_path;
+        char* label;
+        char* input_fstring;
 } Button;
 
-int argc;
-LPWSTR* argv;
-WCHAR initial_working_directory[32767];
-WCHAR exe_path[32767];
-std::vector<Button> buttons;
-int screen_w;
-int screen_h;
-int font_height;
-int width;
-int button_height;
+char initial_working_directory[PATH_MAX];
+char exe_path[PATH_MAX];
 
-int WINAPI wWinMain(
-        HINSTANCE hInstance,
-        HINSTANCE hPrevInstance,
-        PWSTR pCmdLine,
-        int nCmdShow
-) {
-        argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+int main(int argc, char* argv[]) {
+        int screen_h;
+        {
+                int _x, _y, _w;
+                Fl::screen_xywh(_x, _y, _w, screen_h);
+        }
+        if (screen_h == -1) ERROR("Unable to determine screen height");
 
-        // FOR DEBUGGING:
-        // if (AttachConsole(ATTACH_PARENT_PROCESS)) freopen("CONOUT$", "w", stdout);
+        const int font_height = screen_h / 30;
 
-        if (argc < 4) ERR(L"USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
+        fl_font(FL_SCREEN, font_height);
 
-        if (!GetCurrentDirectoryW(
-                ARRAYSIZE(initial_working_directory),
-                initial_working_directory
-        )) ERR(
-                L"Failed to get current working directory (Win32 GetLastError(): %d)",
+        if (argc < 4) Fl::fatal("USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
+
+        if (!getcwd(initial_working_directory, PATH_MAX)) ERROR("Failed to get current working directory");
+        atexit([](){
+                if (chdir(initial_working_directory) != 0) {
+                        ERROR(
+                                "Failed to change working directory back to initial one ('%s')",
+                                initial_working_directory
+                        );
+                }
+        });
+
+        if (!GetModuleFileNameA(NULL, exe_path, ARRAYSIZE(exe_path))) ERROR(
+                "Failed to get path to exe (Win32 GetLastError(): %d)",
                 GetLastError()
         );
-
-        if (!GetModuleFileNameW(NULL, exe_path, ARRAYSIZE(exe_path))) ERR(
-                L"Failed to get path to exe (Win32 GetLastError(): %d)",
-                GetLastError()
-        );
-        WCHAR* path_sep = StrRChrW(exe_path, NULL, L'\\');
-        if (path_sep) *path_sep = L'\0';
-        if (!SetCurrentDirectoryW(exe_path)) ERR(
-                L"Failed to set working dir to launcher exe's parent dir ('%s') (Win32 GetLastError(): %d)",
-                exe_path, GetLastError()
-        );
-
-        HRESULT _res = CoInitializeEx(
-                NULL,
-                (
-                        COINIT_APARTMENTTHREADED |
-                        COINIT_DISABLE_OLE1DDE |
-                        COINIT_SPEED_OVER_MEMORY
-                )
-        );
-        if (_res != S_OK) ERR(
-                L"Failed to initialize Win32 COM (return code: %d)",
-                _res
-        );
+        char* path_sep = strrchr(exe_path, '\\');
+        if (path_sep) *path_sep = '\0';
+        if (chdir(exe_path) != 0) ERROR("Failed to change working directory to '%s'", exe_path);
 
 
         // Buttonless mode
-        if ((wcslen(argv[2]) == 1) && (argv[2][0] == L' ')) ExecuteTarget(argv[1], argv[3]);
+        if ((strlen(argv[2]) == 1) && (argv[2][0] == ' ')) ExecuteTarget(argv[1], argv[3]);
 
 
+        std::vector<Button> buttons;
         for (int i = 1; i < argc;) {
-                WCHAR* target_path = argv[i++];
-                if (i == argc) ERR(L"Target '%s' is missing a label", target_path);
-                WCHAR* button_label = argv[i++];
-                if (i == argc) ERR(L"Target '%s' with label '%s' is missing an input format", target_path, button_label);
-                WCHAR* input_format = argv[i++];
+                char* target_path = argv[i++];
+                if (i == argc) ERROR("Target '%s' is missing a label", target_path);
+                char* button_label = argv[i++];
+                if (i == argc) ERROR("Target '%s' with label '%s' is missing an input format", target_path, button_label);
+                char* input_format = argv[i++];
 
                 buttons.push_back(Button{target_path, button_label, input_format});
         }
 
         int largest_label_width = 0;
         for (Button& button : buttons) {
-                SIZE text_size;
-                GetTextExtentPointW(GetDC(NULL), button.label, wcslen(button.label), &text_size);
-                if (text_size.cx > largest_label_width) largest_label_width = text_size.cx;
+                int w, _h;
+                fl_measure(button.label, w, _h);
+                if (w > largest_label_width) largest_label_width = w;
         }
 
-        screen_w = GetSystemMetrics(SM_CXSCREEN);
-        screen_h = GetSystemMetrics(SM_CYSCREEN);
-        if (!screen_h) ERR( // screen_h is the important one (used for UI scaling)
-                L"Failed to get screen height (Win32 GetLastError(): %d)",
-                GetLastError()
+        const int width = largest_label_width + font_height;
+        const int button_height = font_height;
+
+        Fl_Window* window = new Fl_Window(
+                width,
+                button_height * buttons.size()
         );
 
-        font_height = screen_h / 30;
-
-        width = largest_label_width + font_height;
-        button_height = font_height;
-
-        WNDCLASSEXW wc = {
-                .cbSize = sizeof(WNDCLASSEXW),
-                .lpfnWndProc = [](
-                        HWND hWnd,
-                        UINT uMsg,
-                        WPARAM wParam,
-                        LPARAM lParam
-                ) -> LRESULT {
-                        switch (uMsg) {
-                                case WM_CREATE:
-                                        for (size_t i = 0; i < buttons.size(); i++) {
-                                                if (!CreateWindowExW(
-                                                        0,
-                                                        L"BUTTON",
-                                                        buttons[i].label,
-                                                        (WS_CHILD | WS_VISIBLE),
-                                                        0, (button_height * i),
-                                                        width, button_height,
-                                                        hWnd,
-                                                        (HMENU)i,
-                                                        (HINSTANCE)GetWindowLongPtrW(hWnd, GWLP_HINSTANCE),
-                                                        NULL
-                                                )) ERR(
-                                                        L"Failed to create button for target '%s' with label '%s' and input fstring '%s' (Win32 GetLastError(): %d)",
-                                                        buttons[i].target_path, buttons[i].label, buttons[i].input_fstring, GetLastError()
-                                                );
-                                        }
-                                        return 0;
-
-                                case WM_COMMAND:
-                                        switch (HIWORD(wParam)) {
-                                                case BN_CLICKED:
-                                                {
-                                                        ExecuteTarget(
-                                                                buttons[LOWORD(wParam)].target_path,
-                                                                buttons[LOWORD(wParam)].input_fstring
-                                                        );
-                                                }
-                                                break;
-                                        }
-                                        return 0;
-
-                                case WM_DESTROY:
-                                        if (!SetCurrentDirectoryW(initial_working_directory)) ERR(
-                                                L"Failed to change back working directory to '%s' (Win32 GetLastError(): %d)",
-                                                initial_working_directory, GetLastError()
-                                        );
-
-                                        CoUninitialize();
-
-                                        PostQuitMessage(0);
-                                        return 0;
-                        }
-
-                        return DefWindowProcW(hWnd, uMsg, wParam, lParam);
-                },
-                .hInstance = hInstance,
-                .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
-                .lpszClassName = L"MainWindowClass"
-        };
-        if (!RegisterClassExW(&wc)) ERR(
-                L"Failed to register WNDCLASSEXW for window (Win32 GetLastError(): %d)",
-                GetLastError()
-        );
-
-        hWnd = CreateWindowExW(
-                0, wc.lpszClassName, L"",
-                WS_CAPTION | WS_SYSMENU | WS_POPUP,
-
-                (screen_w/2 - width/2), (screen_h/2 - (button_height * (buttons.size() + 2))/2),
-                width, (button_height * (buttons.size() + 1)),
-
-                NULL, NULL, hInstance, NULL
-        );
-        if (!hWnd) ERR(
-                L"Failed to create window (Win32 GetLastError(): %d)",
-                GetLastError()
-        );
-
-        font = CreateFontW(font_height, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF_SWISS, 0);
-        if (!font) ERR(L"Failed to create font");
-        SendMessageW(
-                hWnd,
-                WM_SETFONT,
-                (WPARAM)font,
-                FALSE
-        );
-
-        ShowWindow(hWnd, nCmdShow);
-
-        MSG msg = {};
-        while (GetMessageW(&msg, NULL, 0, 0) > 0) {
-                TranslateMessage(&msg);
-                DispatchMessageW(&msg);
+        for (int i = 0; i < buttons.size(); i++) {
+                Fl_Button* button = new Fl_Button(
+                        0,
+                        button_height * i,
+                        width,
+                        button_height,
+                        buttons[i].label
+                );
+                button->user_data(&buttons[i]);
+                button->callback([](Fl_Widget*, void* user_data){
+                        Button* _button = (Button*)user_data;
+                        ExecuteTarget(
+                                _button->target_path,
+                                _button->input_fstring
+                        );
+                });
         }
 
-        return 0;
+        window->end();
+        window->show();
+        return Fl::run();
 }
