@@ -1,3 +1,5 @@
+#include <vector>
+
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -35,6 +37,12 @@ HWND hWnd = NULL;
 void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
         // TODO
 }
+
+typedef struct {
+        WCHAR* target_path;
+        WCHAR* label;
+        WCHAR* input_fstring;
+} Button;
 
 int argc;
 LPWSTR* argv;
@@ -75,12 +83,32 @@ int WINAPI wWinMain(
         if ((wcslen(argv[2]) == 1) && (argv[2][0] == L' ')) ExecuteTarget(argv[1], argv[3]);
 
 
-        // TODO
+        std::vector<Button> buttons;
+        for (int i = 1; i < argc;) {
+                WCHAR* target_path = argv[i++];
+                if (i == argc) ERR(L"Target '%s' is missing a label", target_path);
+                WCHAR* button_label = argv[i++];
+                if (i == argc) ERR(L"Target '%s' with label '%s' is missing an input format", target_path, button_label);
+                WCHAR* input_format = argv[i++];
+
+                buttons.push_back(Button{target_path, button_label, input_format});
+        }
+
+        int largest_label_width = 0;
+        for (Button& button : buttons) {
+                SIZE text_size;
+                GetTextExtentPointW(GetDC(NULL), button.label, wcslen(button.label), &text_size);
+                if (text_size.cx > largest_label_width) largest_label_width = text_size.cx;
+        }
 
         const int screen_h = GetSystemMetrics(SM_CYSCREEN);
-        if (!screen_h) ERR(L"Failed to get screen height (Win32 GetLastError(): %d)", GetLastError());
-
+        if (!screen_h) ERR(
+                L"Failed to get screen height (Win32 GetLastError(): %d)",
+                GetLastError()
+        );
         const int font_height = screen_h / 30;
+        const int width = largest_label_width + font_height;
+        const int button_height = font_height;
 
         WNDCLASSEXW wc = {
                 .cbSize = sizeof(WNDCLASSEXW),
@@ -91,7 +119,7 @@ int WINAPI wWinMain(
                         LPARAM lParam
                 ) -> LRESULT {
                         switch (uMsg) {
-                                // TODO
+                                // TODO: CREATE BUTTONS
 
                                 case WM_DESTROY:
                                         if (!SetCurrentDirectoryW(initial_working_directory)) ERR(
@@ -118,8 +146,8 @@ int WINAPI wWinMain(
                 0, wc.lpszClassName, L"",
                 WS_CAPTION | WS_SYSMENU,
 
-                // TODO: Calculate size & pos for:
-                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                CW_USEDEFAULT, CW_USEDEFAULT,
+                width, (button_height * buttons.size()),
 
                 NULL, NULL, hInstance, NULL
         );
