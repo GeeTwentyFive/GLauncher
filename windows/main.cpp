@@ -127,7 +127,7 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                         break;
                         case L'd':
                         {
-                                // TODO
+                                // TODO: ^ + FOS_PICKFOLDERS
                         }
                         break;
                         case L's':
