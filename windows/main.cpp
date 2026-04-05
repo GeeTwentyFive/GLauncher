@@ -48,6 +48,9 @@ int argc;
 LPWSTR* argv;
 WCHAR initial_working_directory[32767];
 WCHAR exe_path[32767];
+std::vector<Button> buttons;
+int width;
+int button_height;
 
 int WINAPI wWinMain(
         HINSTANCE hInstance,
@@ -83,7 +86,6 @@ int WINAPI wWinMain(
         if ((wcslen(argv[2]) == 1) && (argv[2][0] == L' ')) ExecuteTarget(argv[1], argv[3]);
 
 
-        std::vector<Button> buttons;
         for (int i = 1; i < argc;) {
                 WCHAR* target_path = argv[i++];
                 if (i == argc) ERR(L"Target '%s' is missing a label", target_path);
@@ -106,9 +108,11 @@ int WINAPI wWinMain(
                 L"Failed to get screen height (Win32 GetLastError(): %d)",
                 GetLastError()
         );
+
         const int font_height = screen_h / 30;
-        const int width = largest_label_width + font_height;
-        const int button_height = font_height;
+
+        width = largest_label_width + font_height;
+        button_height = font_height;
 
         WNDCLASSEXW wc = {
                 .cbSize = sizeof(WNDCLASSEXW),
@@ -120,7 +124,23 @@ int WINAPI wWinMain(
                 ) -> LRESULT {
                         switch (uMsg) {
                                 case WM_CREATE:
-                                        // TODO: CREATE BUTTONS
+                                        for (int i = 0; i < buttons.size(); i++) {
+                                                if (!CreateWindowExW(
+                                                        0,
+                                                        L"BUTTON",
+                                                        buttons[i].label,
+                                                        (WS_CHILD | WS_VISIBLE),
+                                                        0, (button_height * i),
+                                                        width, button_height,
+                                                        hWnd,
+                                                        NULL,
+                                                        (HINSTANCE)GetWindowLongPtrW(hWnd, GWLP_HINSTANCE),
+                                                        // TODO
+                                                )) ERR(
+                                                        L"Failed to create button for target '%s' with label '%s' and input fstring '%s' (Win32 GetLastError(): %d)",
+                                                        buttons[i].target_path, buttons[i].label, buttons[i].input_fstring, GetLastError()
+                                                );
+                                        }
                                         return 0;
 
                                 case WM_COMMAND:
