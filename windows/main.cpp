@@ -8,6 +8,7 @@
 #include <shellapi.h>
 #include <strsafe.h>
 #include <shlwapi.h>
+#include <shobjidl.h>
 
 
 HWND hWnd = NULL;
@@ -83,7 +84,14 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                 switch (dialog_type) {
                         case L'f':
                         {
-                                // TODO
+                                IFileDialog* pFileDialog;
+                                HRESULT _res = CoCreateInstance(
+                                        // TODO
+                                );
+                                if (_res != S_OK) ERR(
+                                        L"Failed to open file dialog (Win32 CoCreateInstance() return code: %d)",
+                                        _res
+                                );
                         }
                         break;
                         case L'd':
