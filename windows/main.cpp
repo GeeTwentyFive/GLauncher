@@ -36,10 +36,10 @@ HWND hWnd = NULL;
 
 
 WCHAR cmd[32767];
-size_t cmd_len;
+size_t cmd_len = 0;
 
 WCHAR prompt[32767];
-size_t prompt_len;
+size_t prompt_len = 0;
 
 void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
         cmd_len = wcslen(target_path);
@@ -48,7 +48,62 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
 
         size_t _input_fstring_len = wcslen(input_fstring);
         for (int i = 0; i < _input_fstring_len; i++) {
-                // TODO
+                if (
+                        i+2 >= _input_fstring_len ||  // at end
+
+                        input_fstring[i] != L'%' ||
+                        (
+                                input_fstring[i+1] != L'f' &&
+                                input_fstring[i+1] != L'd' &&
+                                input_fstring[i+1] != L's'
+                        ) ||
+                        input_fstring[i+2] != L'{'
+                ) {
+                        cmd[cmd_len++] = input_fstring[i];
+                        continue;
+                }
+
+                WCHAR dialog_type = input_fstring[i+1];
+
+                i += 3; // skip L"%x{"
+
+                while(
+                        (input_fstring[i] != L'}') &&
+                        (input_fstring[i] != L'\0')
+                ) prompt[prompt_len++] = input_fstring[i++];
+
+                if (input_fstring[i] == L'\0') ERR(
+                        L"ERROR: Input format '%s' for target '%s' is missing closing '}'",
+                        input_fstring, target_path
+                );
+
+                WCHAR input[32767];
+                size_t input_len = 0;
+
+                switch (dialog_type) {
+                        case L'f':
+                        {
+                                // TODO
+                        }
+                        break;
+                        case L'd':
+                        {
+                                // TODO
+                        }
+                        break;
+                        case L's':
+                        {
+                                // TODO
+                        }
+                        break;
+                }
+
+                cmd[cmd_len++] = L'"';
+                CopyMemory(cmd+cmd_len, input, input_len*sizeof(WCHAR));
+                cmd_len += input_len;
+                cmd[cmd_len++] = L'"';
+
+                prompt_len = 0;
         }
 
         cmd[cmd_len] = L'\0';
