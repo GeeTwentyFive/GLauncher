@@ -119,7 +119,13 @@ int WINAPI wWinMain(
                         LPARAM lParam
                 ) -> LRESULT {
                         switch (uMsg) {
-                                // TODO: CREATE BUTTONS
+                                case WM_CREATE:
+                                        // TODO: CREATE BUTTONS
+                                        return 0;
+
+                                case WM_COMMAND:
+                                        // TODO: HANDLE BUTTON CLICK
+                                        return 0;
 
                                 case WM_DESTROY:
                                         if (!SetCurrentDirectoryW(initial_working_directory)) ERR(
