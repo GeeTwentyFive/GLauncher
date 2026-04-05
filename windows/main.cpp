@@ -97,6 +97,8 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                                         _res
                                 );
 
+                                pFileOpen->SetTitle(prompt);
+
                                 _res = pFileOpen->Show(hWnd);
                                 if (_res != S_OK) ERR(
                                         L"Failed to show file open dialog (return code: %d)",
@@ -127,7 +129,59 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                         break;
                         case L'd':
                         {
-                                // TODO: ^ + FOS_PICKFOLDERS
+                                IFileDialog* pDirOpen;
+                                HRESULT _res = CoCreateInstance(
+                                        CLSID_FileOpenDialog,
+                                        NULL,
+                                        CLSCTX_ALL,
+                                        IID_IFileOpenDialog,
+                                        (LPVOID*)&pDirOpen
+                                );
+                                if (_res != S_OK) ERR(
+                                        L"Failed to create file open dialog instance (Win32 CoCreateInstance() return code: %d)",
+                                        _res
+                                );
+
+                                FILEOPENDIALOGOPTIONS dwFlags;
+                                _res = pDirOpen->GetOptions(&dwFlags);
+                                if (_res != S_OK) ERR(
+                                        L"Failed to get dir open dialog options (return code: %d)",
+                                        _res
+                                );
+                                _res = pDirOpen->SetOptions(dwFlags | FOS_PICKFOLDERS);
+                                if (_res != S_OK) ERR(
+                                        L"Failed to set dir open dialog options (return code: %d)",
+                                        _res
+                                );
+
+                                pDirOpen->SetTitle(prompt);
+
+                                _res = pDirOpen->Show(hWnd);
+                                if (_res != S_OK) ERR(
+                                        L"Failed to show dir open dialog (return code: %d)",
+                                        _res
+                                );
+
+                                IShellItem* pItem;
+                                _res = pDirOpen->GetResult(&pItem);
+                                if (_res != S_OK) ERR(
+                                        L"Failed to get result from dir open dialog (return code: %d)",
+                                        _res
+                                );
+
+                                PWSTR pszDirPath;
+                                _res = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszDirPath);
+                                if (_res != S_OK) ERR(
+                                        L"Failed to get path from dir open dialog result (return code: %d)",
+                                        _res
+                                );
+
+                                input_len = wcslen(pszDirPath);
+                                CopyMemory(input, pszDirPath, input_len*sizeof(WCHAR));
+
+                                CoTaskMemFree(pszDirPath);
+                                pItem->Release();
+                                pDirOpen->Release();
                         }
                         break;
                         case L's':
@@ -170,6 +224,9 @@ int WINAPI wWinMain(
         int nCmdShow
 ) {
         argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+        // FOR DEBUGGING:
+        // if (AttachConsole(ATTACH_PARENT_PROCESS)) freopen("CONOUT$", "w", stdout);
 
         if (argc < 4) ERR(L"USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
 
