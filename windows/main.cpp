@@ -153,6 +153,12 @@ int WINAPI wWinMain(
                 exe_path, GetLastError()
         );
 
+        HRESULT _res = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+        if (_res != S_OK) ERR(
+                L"Failed to initialize Win32 COM (return code: %d)",
+                _res
+        );
+
 
         // Buttonless mode
         if ((wcslen(argv[2]) == 1) && (argv[2][0] == L' ')) ExecuteTarget(argv[1], argv[3]);
@@ -234,6 +240,8 @@ int WINAPI wWinMain(
                                                 L"Failed to change back working directory to '%s' (Win32 GetLastError(): %d)",
                                                 initial_working_directory, GetLastError()
                                         );
+
+                                        CoUninitialize();
 
                                         PostQuitMessage(0);
                                         return 0;
