@@ -32,6 +32,10 @@ HWND hWnd = NULL;
         } while (0)
 
 
+void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
+        // TODO
+}
+
 int argc;
 LPWSTR* argv;
 WCHAR initial_working_directory[32767];
@@ -59,7 +63,6 @@ int WINAPI wWinMain(
                 L"Failed to get path to exe (Win32 GetLastError(): %d)",
                 GetLastError()
         );
-        // TODO: Change dir to app dir
         WCHAR* path_sep = StrRChrW(exe_path, NULL, L'\\');
         if (path_sep) *path_sep = L'\0';
         if (!SetCurrentDirectoryW(exe_path)) ERR(
@@ -68,8 +71,11 @@ int WINAPI wWinMain(
         );
 
 
-        // TODO: Buttonless mode
+        // Buttonless mode
+        if ((wcslen(argv[2]) == 1) && (argv[2][0] == L' ')) ExecuteTarget(argv[1], argv[3]);
 
+
+        // TODO
 
         const int screen_h = GetSystemMetrics(SM_CYSCREEN);
         if (!screen_h) ERR(L"Failed to get screen height (Win32 GetLastError(): %d)", GetLastError());
