@@ -29,7 +29,7 @@ HWND hWnd = NULL;
                         ##__VA_ARGS__ \
                 ); \
                 MessageBoxW(NULL, msg, title, MB_OK | MB_ICONERROR); \
-                CloseWindow(hWnd); \
+                DestroyWindow(hWnd); \
                 ExitProcess(1); \
         } while (0)
 
@@ -103,8 +103,9 @@ int WINAPI wWinMain(
                 if (text_size.cx > largest_label_width) largest_label_width = text_size.cx;
         }
 
+        const int screen_w = GetSystemMetrics(SM_CXSCREEN);
         const int screen_h = GetSystemMetrics(SM_CYSCREEN);
-        if (!screen_h) ERR(
+        if (!screen_h) ERR( // screen_h is the important one (used for UI scaling)
                 L"Failed to get screen height (Win32 GetLastError(): %d)",
                 GetLastError()
         );
@@ -179,10 +180,10 @@ int WINAPI wWinMain(
 
         hWnd = CreateWindowExW(
                 0, wc.lpszClassName, L"",
-                WS_CAPTION | WS_SYSMENU,
+                WS_CAPTION | WS_SYSMENU | WS_POPUP,
 
-                CW_USEDEFAULT, CW_USEDEFAULT,
-                width, (button_height * buttons.size()),
+                (screen_w/2 - width/2), (screen_h/2 - (button_height * (buttons.size() + 2))/2),
+                width, (button_height * (buttons.size() + 1)),
 
                 NULL, NULL, hInstance, NULL
         );
