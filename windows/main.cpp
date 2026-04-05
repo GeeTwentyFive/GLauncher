@@ -117,7 +117,8 @@ void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
                                         _res
                                 );
 
-                                // TODO
+                                input_len = wcslen(pszFilePath);
+                                CopyMemory(input, pszFilePath, input_len*sizeof(WCHAR));
 
                                 CoTaskMemFree(pszFilePath);
                                 pItem->Release();
