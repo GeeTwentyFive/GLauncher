@@ -12,6 +12,7 @@
 
 HWND hWnd = NULL;
 
+
 #define ERR(fmt, ...) \
         do { \
                 WCHAR title[8192]; \
@@ -34,8 +35,24 @@ HWND hWnd = NULL;
         } while (0)
 
 
+WCHAR cmd[32767];
+size_t cmd_len;
+
+WCHAR prompt[32767];
+size_t prompt_len;
+
 void ExecuteTarget(const WCHAR* target_path, const WCHAR* input_fstring) {
-        ERR(L"%s - %s", target_path, input_fstring); // TEMP; TEST
+        cmd_len = wcslen(target_path);
+        CopyMemory(cmd, target_path, cmd_len*sizeof(WCHAR));
+        cmd[cmd_len++] = L' ';
+
+        size_t _input_fstring_len = wcslen(input_fstring);
+        for (int i = 0; i < _input_fstring_len; i++) {
+                // TODO
+        }
+
+        cmd[cmd_len] = L'\0';
+        ExitProcess(_wsystem(cmd));
 }
 
 typedef struct {
