@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <shellapi.h>
 #include <strsafe.h>
+#include <shlwapi.h>
 
 
 HWND hWnd = NULL;
@@ -59,6 +60,16 @@ int WINAPI wWinMain(
                 GetLastError()
         );
         // TODO: Change dir to app dir
+        WCHAR* path_sep = StrRChrW(exe_path, NULL, L'\\');
+        if (path_sep) *path_sep = L'\0';
+        if (!SetCurrentDirectoryW(exe_path)) ERR(
+                L"Failed to set working dir to launcher exe's parent dir ('%s') (Win32 GetLastError(): %d)",
+                exe_path, GetLastError()
+        );
+
+
+        // TODO: Buttonless mode
+
 
         const int screen_h = GetSystemMetrics(SM_CYSCREEN);
         if (!screen_h) ERR(L"Failed to get screen height (Win32 GetLastError(): %d)", GetLastError());
