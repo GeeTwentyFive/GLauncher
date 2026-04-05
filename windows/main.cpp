@@ -34,6 +34,7 @@ HWND hWnd = NULL;
 int argc;
 LPWSTR* argv;
 WCHAR initial_working_directory[32767];
+WCHAR exe_path[32767];
 
 int WINAPI wWinMain(
         HINSTANCE hInstance,
@@ -45,12 +46,18 @@ int WINAPI wWinMain(
 
         if (argc < 4) ERR(L"USAGE: <<PATH/TO/TARGET> <BUTTON_LABEL> <INPUT_FORMAT>> ...");
 
-        int _ok = GetCurrentDirectoryW(
+        if (!GetCurrentDirectoryW(
                 ARRAYSIZE(initial_working_directory),
                 initial_working_directory
+        )) ERR(
+                L"Failed to get current working directory (Win32 GetLastError(): %d)",
+                GetLastError()
         );
-        if (!_ok) ERR(L"Failed to get current working directory (Win32 GetLastError(): %d)", GetLastError());
 
+        if (!GetModuleFileNameW(NULL, exe_path, ARRAYSIZE(exe_path))) ERR(
+                L"Failed to get path to exe (Win32 GetLastError(): %d)",
+                GetLastError()
+        );
         // TODO: Change dir to app dir
 
         const int screen_h = GetSystemMetrics(SM_CYSCREEN);
@@ -70,8 +77,10 @@ int WINAPI wWinMain(
                                 // TODO
 
                                 case WM_DESTROY:
-                                        int _ok = SetCurrentDirectoryW(initial_working_directory);
-                                        if (!_ok) ERR(L"Failed to change back working directory to '%s' (Win32 GetLastError(): %d)", initial_working_directory, GetLastError());
+                                        if (!SetCurrentDirectoryW(initial_working_directory)) ERR(
+                                                L"Failed to change back working directory to '%s' (Win32 GetLastError(): %d)",
+                                                initial_working_directory, GetLastError()
+                                        );
 
                                         PostQuitMessage(0);
                                         return 0;
@@ -83,7 +92,10 @@ int WINAPI wWinMain(
                 .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
                 .lpszClassName = L"MainWindowClass"
         };
-        if (!RegisterClassExW(&wc)) ERR(L"Failed to register WNDCLASSEXW for window (Win32 GetLastError(): %d)", GetLastError());
+        if (!RegisterClassExW(&wc)) ERR(
+                L"Failed to register WNDCLASSEXW for window (Win32 GetLastError(): %d)",
+                GetLastError()
+        );
 
         hWnd = CreateWindowExW(
                 0, wc.lpszClassName, L"",
@@ -94,7 +106,10 @@ int WINAPI wWinMain(
 
                 NULL, NULL, hInstance, NULL
         );
-        if (!hWnd) ERR(L"Failed to create window (Win32 GetLastError(): %d)", GetLastError());
+        if (!hWnd) ERR(
+                L"Failed to create window (Win32 GetLastError(): %d)",
+                GetLastError()
+        );
 
         const HFONT font = CreateFontW(font_height, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF_SWISS, 0);
         if (!font) ERR(L"Failed to create font");
