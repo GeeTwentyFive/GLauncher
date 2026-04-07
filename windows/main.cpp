@@ -33,6 +33,10 @@
         ); } while (0)
 
 
+// (FLTK on Windows doesn't let you make a window thinner than this)
+#define _MIN_WINDOW_WIDTH 130
+
+
 char cmd[ARG_MAX];
 int cmd_len = 0;
 
@@ -126,10 +130,10 @@ char initial_working_directory[PATH_MAX];
 char exe_path[PATH_MAX];
 
 int main(int argc, char* argv[]) {
-        int screen_h;
+        int screen_w, screen_h;
         {
-                int _x, _y, _w;
-                Fl::screen_xywh(_x, _y, _w, screen_h);
+                int _x, _y;
+                Fl::screen_xywh(_x, _y, screen_w, screen_h);
         }
         if (screen_h == -1) ERROR("Unable to determine screen height");
 
@@ -180,12 +184,16 @@ int main(int argc, char* argv[]) {
                 if (w > largest_label_width) largest_label_width = w;
         }
 
-        const int width = largest_label_width + font_height;
+        int width = largest_label_width + font_height;
+        if (width < _MIN_WINDOW_WIDTH) width = _MIN_WINDOW_WIDTH;
         const int button_height = font_height;
 
+        const int window_height = button_height * buttons.size();
         Fl_Window* window = new Fl_Window(
+                (screen_w/2) - (width/2),
+                (screen_h/2) - (window_height/2),
                 width,
-                button_height * buttons.size()
+                window_height
         );
 
         for (int i = 0; i < buttons.size(); i++) {
